@@ -1,0 +1,43 @@
+{# Inclui o template principal nesta página #}
+{% extends '_template.html' %}
+
+{# Bloco com conteúdo desta página #}
+{% block conteudo %}
+
+<h2>Cadastre-se</h2>
+<p>Você precisa se cadastrar para gerenciar sua coleção.</p>
+<p>Preencha todos os campos para se cadastrar.</p>
+
+<form action="/cadastro" method="post" id="form-cadastro">
+
+<p>
+    <label for="nome">Nome:</label>
+    <input type="text" name="nome" id="nome">
+</p>
+
+<p>
+    <label for="nascimento">Nascimento:</label>
+    <input type="date" name="nascimento" id="nascimento">
+</p>
+
+<p>
+    <label for="email">E-mail:</label>
+    <input type="email" name="email" id="email">
+</p>
+
+<p>
+    <label for="senha">Senha:</label>
+    <span>
+        <input type="password" name="senha" id="senha">
+        <button type="button"><i class="fa-solid fa-eye"></i></button>
+    </span>
+</p>
+
+<p>
+    <button type="submit">Cadastrar</button>
+</p>
+
+</form>
+
+
+{% endblock %}

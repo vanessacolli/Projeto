@@ -1,0 +1,39 @@
+{# Inclui o template principal nesta página #}
+{% extends '_template.html' %}
+
+{# Bloco com conteúdo desta página #}
+{% block conteudo %}
+
+<h2>Novo Treco</h2>
+
+<p>Preencha todos os campos para cadastrar um novo treco.</p>
+
+<form action="/novo" method="post" id="form-novo">
+
+    <p>
+        <label for="foto">Foto:</label>
+        <input type="url" name="foto" id="foto" required>
+    </p>
+
+    <p>
+        <label for="nome">Nome:</label>
+        <input type="text" name="nome" id="nome" required minlength="3">
+    </p>
+
+    <p>
+        <label for="descricao">Descrição:</label>
+        <textarea name="descricao" id="descricao" required minlength="5"></textarea>
+    </p>
+
+    <p>
+        <label for="localizacao">Localização:</label>
+        <input type="text" name="localizacao" id="localizacao" required minlength="2">
+    </p>
+
+    <p>
+        <button type="submit">Cadastrar</button>
+    </p>
+
+</form>
+
+{% endblock %}
