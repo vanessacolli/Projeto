@@ -58,23 +58,44 @@ def login():
 
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
-        'titulo': 'CRUDTrecos - Login',
-        'usuario': usuario
+        'titulo': 'CRUDTrecos - Login'
     }
 
     return render_template('login.html', **pagina)
 
 
-@app.route('/cadastro', methods=['GET', 'POST'])
+@app.route('/cadastro', methods=['GET', 'POST'])  # Cadastro de usuário
 def cadastro():
 
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
-        'titulo': 'CRUDTrecos - Login',
-        'usuario': usuario
+        'titulo': 'CRUDTrecos - Cadastre-se',
     }
 
     return render_template('cadastro.html', **pagina)
+
+
+@app.route('/novasenha', methods=['GET', 'POST'])  # Pedido de senha de usuário
+def novasenha():
+
+    # Dados, variáveis e valores a serem passados para o template HTML
+    pagina = {
+        'titulo': 'CRUDTrecos - Nova Senha'
+    }
+
+    return render_template('novasenha.html', **pagina)
+
+@app.route('/perfil')
+def perfil():
+    
+    # Dados, variáveis e valores a serem passados para o template HTML
+    pagina = {
+        'titulo': 'CRUDTrecos - Novo Treco',
+        'usuario': usuario
+    }
+
+    # Renderiza o template HTML, passaod valores para ele
+    return render_template('perfil.html', **pagina)
 
 
 # Executa o servidor HTTP se estiver no modo de desenvolvimento

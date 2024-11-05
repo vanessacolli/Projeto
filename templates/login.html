@@ -15,7 +15,7 @@
 
     <p>
         <label for="senha">Senha:</label>
-        <input type="password" name="senha" id="senha" required minlength="6" maxlength="63">
+        <input type="password" name="senha" id="senha" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
     </p>
 
     <p>
@@ -23,8 +23,10 @@
     </p>
 
 </form>
-
-<p>Não é cadastrado? <a href="/cadastro">Clique aqui!</a></p>
-<p>Esqueceu a senha? <a href="/novasenha">Clique aqui!</a></p>
+<hr>
+<ul>
+    <li>Não é cadastrado? <a href="/cadastro">Clique aqui!</a></li>
+    <li>Esqueceu a senha? <a href="/novasenha">Clique aqui!</a></li>
+</ul>
 
 {% endblock %}
