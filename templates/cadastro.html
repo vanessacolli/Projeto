@@ -8,7 +8,7 @@
 <p>Você precisa se cadastrar para gerenciar sua coleção.</p>
 <p>Preencha todos os campos para se cadastrar.</p>
 
-<form action="/cadastro" method="post" id="form-cadastro">
+<form action="/cadastro" method="post" id="formCadastro">
 
 <p>
     <label for="nome">Nome:</label>
@@ -27,9 +27,9 @@
 
 <p>
     <label for="senha">Senha:</label>
-    <span>
-        <input type="password" name="senha" id="senha">
-        <button type="button"><i class="fa-solid fa-eye"></i></button>
+    <span class="input-password">
+        <input type="password" name="senha" id="senha" required minlength="6" maxlength="63">
+        <button type="button"><i class="fa-solid fa-eye fa-fw"></i></button>
     </span>
 </p>
 

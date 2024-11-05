@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/_template.css">
     <link rel="shortcut icon" href="/static/img/favicon.png">
+    {# Se definiu uma folha de estilos, gera o link para ela. #}
+    {% if css %}
+    <link rel="stylesheet" href="/static/css/{{ css }}">
+    {% endif %}
     {# Interpola a variável 'titulo' no <title></title> do site #}
     <title>{{ titulo }}</title>
 </head>
