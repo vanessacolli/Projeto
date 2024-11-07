@@ -45,6 +45,8 @@ def start():
 @app.route("/")  # Rota raiz, equivalente a página inicial do site (index)
 def index():  # Função executada ao acessar a rota raiz
 
+    acao = request.args.get('a')
+
     # Um SQL de teste para exibir todos os 'trecos' do usuário conectado
     sql = '''
         SELECT t_id, t_foto, t_nome, t_descricao, t_localizacao 
@@ -66,6 +68,7 @@ def index():  # Função executada ao acessar a rota raiz
         'titulo': 'CRUDTrecos',
         'usuario': g.usuario,
         'trecos': trecos,
+        'acao': acao
     }
 
     # Renderiza o template HTML, passando valores (pagina) para ele
@@ -181,7 +184,7 @@ def apaga(id):
     cur.close()
 
     # Retorna para a página anterior
-    return redirect(url_for('index'))
+    return redirect(url_for('index', a='apagado'))
 
 
 # Executa o servidor HTTP se estiver no modo de desenvolvimento

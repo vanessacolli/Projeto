@@ -26,4 +26,17 @@
 
 </div>
 
+{% if acao == 'apagado' %}
+
+<dialog id="myDialog">
+    <h4>Oba!</h4>
+    <p>Seu treco foi apagado com sucesso!</p>
+    <form method="dialog">
+        <button>OK</button>
+    </form>
+</dialog>
+<script>myDialog.showModal()</script>
+
+{% endif %}
+
 {% endblock %}
