@@ -1,5 +1,5 @@
 # Importa as dependências do aplicativo
-from flask import Flask, render_template, request
+from flask import Flask, g, redirect, render_template, request, url_for
 from flask_mysqldb import MySQL
 
 # Cria um aplicativo Flask chamado "app"
@@ -33,15 +33,13 @@ def start():
     # Setup do MySQL para dias da semana e meses em português
     cur.execute("SET lc_time_names = 'pt_BR'")
 
-
-# Cria um usuário "fake" para testes
-# No futuro, isso virá de um cookie
-usuario = {
-    'nome': 'Joca da Silva',
-    'id': '1'
-}
-# Extrai apenas o primeiro nome do usuário
-usuario['pnome'] = usuario['nome'].split()[0]
+    # Cria um usuário "fake" para testes
+    # No futuro, isso virá de um cookie
+    g.usuario = {
+        'id': '1',
+        'nome': 'Joca da Silva',
+        'pnome': 'Joca',
+    }
 
 
 @app.route("/")  # Rota raiz, equivalente a página inicial do site (index)
@@ -49,22 +47,25 @@ def index():  # Função executada ao acessar a rota raiz
 
     # Um SQL de teste para exibir todos os 'trecos' do usuário conectado
     sql = '''
-        SELECT * FROM treco
-        WHERE t_usuario = '1' 
-            AND t_status = 'on';
+        SELECT t_id, t_foto, t_nome, t_descricao, t_localizacao 
+        FROM treco
+        WHERE t_usuario = %s 
+            AND t_status = 'on'
+        ORDER BY t_data DESC
     '''
     cur = mysql.connection.cursor()
-    cur.execute(sql,)
+    cur.execute(sql, g.usuario['id'])
     trecos = cur.fetchall()
     cur.close()
 
     # Teste de mesa para verificar o retorno dos dados do banco de dados
-    print('\n\n\n', trecos, '\n\n\n')
+    # print('\n\n\n', trecos, '\n\n\n')
 
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
         'titulo': 'CRUDTrecos',
-        'usuario': usuario
+        'usuario': g.usuario,
+        'trecos': trecos,
     }
 
     # Renderiza o template HTML, passando valores (pagina) para ele
@@ -75,6 +76,9 @@ def index():  # Função executada ao acessar a rota raiz
 @app.route('/novo', methods=['GET', 'POST'])
 def novo():  # Função executada para cadastrar novo treco
 
+    # Variável que ativa a mensagem de sucesso no HTML
+    sucesso = False
+
     # Se o formulário foi enviado
     if request.method == 'POST':
 
@@ -83,14 +87,32 @@ def novo():  # Função executada para cadastrar novo treco
 
         # Teste de mesa (comente depois dos testes)
         # Verifica se os dados do formulário chegaram ao back-end
-        print('\n\n\n', form, '\n\n\n')
+        # print('\n\n\n', form, '\n\n\n')
 
-        # Em breve: grava os dados no banco de dados e segue o fluxo
+        # Grava os dados no banco de dados
+        sql = '''
+            INSERT INTO treco (
+                t_usuario, t_foto, t_nome, t_descricao, t_localizacao
+            ) VALUES (%s, %s, %s, %s, %s)
+        '''
+        cur = mysql.connection.cursor()
+        cur.execute(sql, (
+            g.usuario['id'],
+            form['foto'],
+            form['nome'],
+            form['descricao'],
+            form['localizacao'],
+        ))
+        mysql.connection.commit()
+        cur.close()
+
+        sucesso = True
 
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
         'titulo': 'CRUDTrecos - Novo Treco',
-        'usuario': usuario
+        'usuario': g.usuario,
+        'sucesso': sucesso,
     }
 
     # Renderiza o template HTML, passaod valores para ele
@@ -136,11 +158,30 @@ def perfil():
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
         'titulo': 'CRUDTrecos - Novo Treco',
-        'usuario': usuario
+        'usuario': g.usuario
     }
 
     # Renderiza o template HTML, passaod valores para ele
     return render_template('perfil.html', **pagina)
+
+
+@app.route('/apaga/<id>')
+def apaga(id):
+
+    # Apaga completamente o treco (CUIDADO!)
+    # sql = 'DELETE FROM treco WHERE t_id = %s'
+
+    # Altera o status do treco para 'del'
+    sql = "UPDATE treco SET t_status = 'del'  WHERE t_id = %s"
+
+    # Executa o SQL
+    cur = mysql.connection.cursor()
+    cur.execute(sql, (id,))
+    mysql.connection.commit()
+    cur.close()
+
+    # Retorna para a página anterior
+    return redirect(url_for('index'))
 
 
 # Executa o servidor HTTP se estiver no modo de desenvolvimento

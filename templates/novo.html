@@ -48,4 +48,17 @@
 
 </form>
 
+{% if sucesso %}
+
+<dialog id="myDialog">
+    <h4>Legal!</h4>
+    <p>Seu novo treco foi cadastrado!</p>
+    <form method="dialog">
+        <button>OK</button>
+    </form>
+</dialog>
+<script>myDialog.showModal()</script>
+
+{% endif %}
+
 {% endblock %}
