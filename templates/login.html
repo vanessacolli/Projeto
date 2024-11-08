@@ -29,4 +29,16 @@
     <li>Esqueceu a senha? <a href="/novasenha">Clique aqui!</a></li>
 </ul>
 
+
+{% if erro %}
+
+<dialog id="myDialog">
+    <h4>Oooops!</h4>
+    <p>Não encontrei seus dados! Verifique o e-mail e a senha e tente novamente.</p>
+    <form method="dialog"><button>OK</button></form>
+</dialog>
+<script>myDialog.showModal()</script>
+
+{% endif %}
+
 {% endblock %}
