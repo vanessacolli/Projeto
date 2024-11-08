@@ -1,8 +1,8 @@
 # Importa as dependências do aplicativo
-from flask import Flask, g, redirect, render_template, request, url_for
+from flask import Flask, g, make_response, redirect, render_template, request, url_for
 from flask_mysqldb import MySQL
 import json
-from functions.geral import remove_prefixo
+from functions.geral import datetime_para_string, remove_prefixo
 
 # Cria um aplicativo Flask chamado "app"
 app = Flask(__name__)
@@ -75,7 +75,7 @@ def index():  # Função executada ao acessar a rota raiz
         ORDER BY t_data DESC
     '''
     cur = mysql.connection.cursor()
-    cur.execute(sql, g.usuario['id'])
+    cur.execute(sql, (g.usuario['id'],))
     trecos = cur.fetchall()
     cur.close()
 
@@ -155,10 +155,10 @@ def login():
         # Pesquisa se os dados existem no banco de dados → usuario
         # datetime.datetime(2024, 11, 8, 9, 23, 28)
         sql = '''
-            SELECT u_id, u_nome, u_email, u_status,
-                -- Formata uma data em um formato específico → dd/mm/aaaa às hh:mm
-                DATE_FORMAT(u_data, '%%d/%%m/%%Y às %%H:%%i')
-
+            SELECT *,
+                -- Gera uma versão das datas em pt-BR
+                DATE_FORMAT(u_data, '%%d/%%m/%%Y às %%H:%%m') AS u_databr,
+                DATE_FORMAT(u_nascimento, '%%d/%%m/%%Y') AS u_nascimentobr
             FROM usuario
             WHERE u_email = %s
                 AND u_senha = SHA1(%s)
@@ -170,7 +170,7 @@ def login():
         cur.close()
 
         # Teste mesa
-        print('\n\n\n', usuario, '\n\n\n')
+        # print('\n\n\nDICT:', usuario, '\n\n\n')
 
         if usuario == None:
             # Se o usuário não foi encontrado
@@ -180,6 +180,12 @@ def login():
             # Apaga a senha do usuário para salvar no cookie
             del usuario['u_senha']
 
+            # Primeiro nome do usuário
+            usuario['u_pnome'] = usuario['u_nome'].split()[0]
+
+            # Formata as datas para usar no JSON
+            usuario = datetime_para_string(usuario)
+
             # Remove o prefixo das chaves do dicionário
             cookie_valor = remove_prefixo(usuario)
 
@@ -188,7 +194,20 @@ def login():
             cookie_json = json.dumps(cookie_valor)
 
             # Teste de mesa
-            print('\n\n\n', cookie_json, '\n\n\n')
+            # print('\n\n\nCOOKIE:', cookie_json, '\n\n\n')
+
+            # Prepara a página de destino → index
+            resposta = make_response(redirect(url_for('index')))
+
+            # Cria um cookie
+            resposta.set_cookie(
+                key='usuario',  # Nome do cookie
+                value=cookie_json,  # Valor a ser gravado no cookie
+                max_age=60 * 60 * 24 * 365  # Validade do cookie em segundos
+            )
+
+            # Redireciona para a página de destino → index
+            return resposta
 
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
@@ -250,6 +269,23 @@ def apaga(id):
 
     # Retorna para a página anterior
     return redirect(url_for('index', a='apagado'))
+
+
+@app.route('/logout')
+def logout():
+
+    # Página de destino de logout
+    resposta = make_response(redirect(url_for('login')))
+
+    # apaga o cookie do usuário
+    resposta.set_cookie(
+        key='usuario',  # Nome do cookie
+        value='',  # Apara o valor do cookie
+        max_age=0  # A validade do cookie é ZERO
+    )
+
+    # Redireciona para login
+    return resposta
 
 
 # Executa o servidor HTTP se estiver no modo de desenvolvimento
