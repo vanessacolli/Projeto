@@ -2,7 +2,7 @@
 from flask import Flask, g, make_response, redirect, render_template, request, url_for
 from flask_mysqldb import MySQL
 import json
-from functions.geral import datetime_para_string, remove_prefixo
+from functions.geral import calcular_idade, datetime_para_string, gerar_senha, remove_prefixo
 
 # Cria um aplicativo Flask chamado "app"
 app = Flask(__name__)
@@ -98,6 +98,12 @@ def index():  # Função executada ao acessar a rota raiz
 @app.route('/novo', methods=['GET', 'POST'])
 def novo():  # Função executada para cadastrar novo treco
 
+    # Verifica se o usuário está logado → Pelo cookie
+    if g.usuario == '':
+        # Se o usuário não está logado
+        # Redireciona para a página de login
+        return redirect(url_for('login'))
+
     # Variável que ativa a mensagem de sucesso no HTML
     sucesso = False
 
@@ -144,6 +150,12 @@ def novo():  # Função executada para cadastrar novo treco
 @app.route('/login', methods=['GET', 'POST'])  # Rota para login de usuário
 def login():
 
+    # Verifica se o usuário está logado → Pelo cookie
+    if g.usuario != '':
+        # Se o usuário está logado
+        # Redireciona para a página inicial
+        return redirect(url_for('index'))
+
     erro = False
 
     if request.method == 'POST':
@@ -151,6 +163,9 @@ def login():
 
         # Pega os dados preenchidos no formulário
         form = dict(request.form)
+
+        # Teste mesa
+        # print('\n\n\nFORM:', form, '\n\n\n')
 
         # Pesquisa se os dados existem no banco de dados → usuario
         # datetime.datetime(2024, 11, 8, 9, 23, 28)
@@ -221,6 +236,12 @@ def login():
 @app.route('/cadastro', methods=['GET', 'POST'])  # Cadastro de usuário
 def cadastro():
 
+    # Verifica se o usuário está logado → Pelo cookie
+    if g.usuario != '':
+        # Se o usuário está logado
+        # Redireciona para a página inicial
+        return redirect(url_for('index'))
+
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
         'titulo': 'CRUDTrecos - Cadastre-se',
@@ -232,9 +253,65 @@ def cadastro():
 @app.route('/novasenha', methods=['GET', 'POST'])  # Pedido de senha de usuário
 def novasenha():
 
+    novasenha = ''
+    erro = False
+
+    # Verifica se o usuário está logado → Pelo cookie
+    if g.usuario != '':
+        # Se o usuário está logado
+        # Redireciona para a página inicial
+        return redirect(url_for('index'))
+
+    # Se o formulário foi enviado
+    if request.method == 'POST':
+
+        # Obtém dados preenchidos
+        form = dict(request.form)
+
+        # Teste de mesa
+        # print('\n\n\nFORM:', form, '\n\n\n')
+
+        # Pesquisa pelo email e nascimento informados, no banco de dados
+        sql = '''
+            SELECT u_id 
+            FROM usuario
+            WHERE u_email = %s 
+                AND u_nascimento = %s
+                AND u_status = 'on'
+        '''
+        cur = mysql.connection.cursor()
+        cur.execute(sql, (form['email'], form['nascimento'],))
+        row = cur.fetchone()
+        cur.close()
+
+        # Teste de mesa
+        print('\n\n\nDB:', row, '\n\n\n')
+
+        # Se o usuário existe
+        if row == None:
+
+            erro = True
+
+        else:
+            # Gera uma nova senha
+            novasenha = gerar_senha()
+
+            # Salva a nova senha no banco de dados
+            sql = '''
+                UPDATE usuario
+                SET u_senha = SHA1(%s)
+                WHERE u_id = %s
+            '''
+            cur = mysql.connection.cursor()
+            cur.execute(sql, (novasenha, row['u_id'],))
+            mysql.connection.commit()
+            cur.close()
+
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
-        'titulo': 'CRUDTrecos - Nova Senha'
+        'titulo': 'CRUDTrecos - Nova Senha',
+        'erro': erro,
+        'novasenha': novasenha,
     }
 
     return render_template('novasenha.html', **pagina)
@@ -243,10 +320,36 @@ def novasenha():
 @app.route('/perfil')
 def perfil():
 
+    # Verifica se o usuário está logado → Pelo cookie
+    if g.usuario == '':
+        # Se o usuário não está logado
+        # Redireciona para a página de login
+        return redirect(url_for('login'))
+
+    # Calcula idade do usuário
+    g.usuario['idade'] = calcular_idade(g.usuario['nascimento'])
+
+    # Obtém a quantidade de trecos ativos os usuário
+    sql = '''
+        SELECT count(t_id) AS total 
+        FROM treco 
+        WHERE t_usuario = %s
+            AND t_status = 'on'
+    '''
+    cur = mysql.connection.cursor()
+    cur.execute(sql, (g.usuario['id'],))
+    row = cur.fetchone()
+    cur.close()
+
+    # Teste de mesa
+    # print('\n\n\n', row, '\n\n\n')
+
+    g.usuario['total'] = row['total']
+
     # Dados, variáveis e valores a serem passados para o template HTML
     pagina = {
         'titulo': 'CRUDTrecos - Novo Treco',
-        'usuario': g.usuario
+        'usuario': g.usuario,  # Dados do cookie do usuário
     }
 
     # Renderiza o template HTML, passaod valores para ele
@@ -255,6 +358,12 @@ def perfil():
 
 @app.route('/apaga/<id>')
 def apaga(id):
+
+    # Verifica se o usuário está logado → Pelo cookie
+    if g.usuario == '':
+        # Se o usuário não está logado
+        # Redireciona para a página de login
+        return redirect(url_for('login'))
 
     # (des)comente o método para apagar conforme o seu caso
     # sql = 'DELETE FROM treco WHERE t_id = %s' # Apaga completamente o treco (CUIDADO!)
@@ -273,6 +382,51 @@ def apaga(id):
 
 @app.route('/logout')
 def logout():
+
+    # Verifica se o usuário está logado → Pelo cookie
+    if g.usuario == '':
+        # Se o usuário não está logado
+        # Redireciona para a página de login
+        return redirect(url_for('login'))
+
+    # Página de destino de logout
+    resposta = make_response(redirect(url_for('login')))
+
+    # apaga o cookie do usuário
+    resposta.set_cookie(
+        key='usuario',  # Nome do cookie
+        value='',  # Apara o valor do cookie
+        max_age=0  # A validade do cookie é ZERO
+    )
+
+    # Redireciona para login
+    return resposta
+
+
+@app.route('/apagausuario')
+def apagausuario():
+    # Apaga um usuário do sistema
+    # Também apaga todos os seus "trecos"
+
+    # Verifica se o usuário está logado → Pelo cookie
+    if g.usuario == '':
+        # Se o usuário não está logado
+        # Redireciona para a página de login
+        return redirect(url_for('login'))
+
+    # Configura o status do usuário para 'del' no banco de dados
+    sql = "UPDATE usuario SET u_status = 'del' WHERE u_id = %s"
+    cur = mysql.connection.cursor()
+    cur.execute(sql, (g.usuario['id'],))
+    mysql.connection.commit()
+    cur.close()
+
+    # Configura o status dos trecos do usuário para 'del' no banco de dados
+    sql = "UPDATE treco SET t_status = 'del' WHERE t_usuario = %s"
+    cur = mysql.connection.cursor()
+    cur.execute(sql, (g.usuario['id'],))
+    mysql.connection.commit()
+    cur.close()
 
     # Página de destino de logout
     resposta = make_response(redirect(url_for('login')))
