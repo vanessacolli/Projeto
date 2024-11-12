@@ -47,11 +47,34 @@
 
 <p>Sua nova senha temporária está logo abaixo:
 
-<p class="center"><input class="novasenha" type="text" value="{{ novasenha }}" readonly></p>
+<p class="novasenha">
+    <input class="novasenha" type="text" id="meuInput" value="{{ novasenha }}" readonly>
+    <button id="copiarBtn">Copiar</button>
+</p>
 
 <p>Lembre-se de anotar essa senha para uso futuro.</p>
 
-<p class="center"><button type="button" onclick="location.href='/login'">Fazer login</button></p>
+<p class="center"><button type="button" class="btnProfile" onclick="location.href='/login'">Fazer login</button></p>
+
+<script>
+    document.getElementById('copiarBtn').addEventListener('click', function () {
+        // Seleciona o campo de entrada de texto
+        const input = document.getElementById('meuInput');
+
+        // Seleciona o conteúdo do campo de entrada
+        input.select();
+        input.setSelectionRange(0, 99999); // Para dispositivos móveis
+
+        try {
+            // Executa o comando de cópia
+            document.execCommand('copy');
+            alert('Senha copiada para a área de transferência!');
+        } catch (err) {
+            console.error('Falha ao copiar o texto: ', err);
+            alert('Falha ao copiar a senha. Por favor, use Ctrl + C.');
+        }
+    });
+</script>
 
 {% endif %}
 

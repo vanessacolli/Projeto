@@ -370,9 +370,16 @@ button {
     padding-left: 1rem;
 }
 
-.novasenha {
+p.novasenha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input.novasenha {
     font-size: 1.5rem;
     text-align: center;
     border: 1px solid grey;
     border-radius: .3rem;
+    width: 200px;
 }
