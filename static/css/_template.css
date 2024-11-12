@@ -273,7 +273,9 @@ button {
 
 #formNovo,
 #formCadastro,
-#formNovasenha {
+#formNovasenha,
+#formEdita,
+#formEditaPerfil {
     max-width: 500px;
 }
 
@@ -329,13 +331,15 @@ button {
     background: rgba(0, 0, 0, 0.5);
 }
 
-.apaga {
+.flutua-icone {
     float: right;
 }
 
 /* Perfil */
 
-.btnSignout, .btnLogout {
+.btnSignout,
+.btnLogout,
+.btnProfile {
     display: table;
     margin: auto;
     padding: .25rem .5rem;
@@ -345,11 +349,15 @@ button {
     cursor: pointer;
 }
 
-.btnLogout{
+.btnProfile {
     background-color: steelblue;
 }
 
-.btnSignout{
+.btnLogout {
+    background-color: orange;
+}
+
+.btnSignout {
     background-color: orangered;
 }
 

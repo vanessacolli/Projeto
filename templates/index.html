@@ -13,8 +13,11 @@
     <div class="item">
         <a href="{{ treco.t_foto }}" target="_blank"><img src="{{ treco.t_foto }}" alt="{{ treco.t_nome }}"></a>
         <div>
-            <a class="apaga" href="/apaga/{{ treco.t_id }}" onclick="return confirm('Term certeza que deseja apagar este treco?')">
+            <a class="flutua-icone" href="/apaga/{{ treco.t_id }}" title="Apagar {{ treco.t_nome }}." onclick="return confirm('Term certeza que deseja apagar este treco?')">
                 <i class="fa-regular fa-trash-can fa-fw"></i>
+            </a>
+            <a class="flutua-icone" href="/edita/{{ treco.t_id }}" title="Editar {{ treco.t_nome }}.">
+                <i class="fa-solid fa-pen-to-square fa-fw"></i>
             </a>
             <h4>{{ treco.t_nome }}</h4>
             {{ treco.t_descricao }}
@@ -32,7 +35,20 @@
     <h4>Oba!</h4>
     <p>Seu treco foi apagado com sucesso!</p>
     <form method="dialog">
-        <button>OK</button>
+        <button onclick="window.history.pushState({}, '', '/')">OK</button>
+    </form>
+</dialog>
+<script>myDialog.showModal()</script>
+
+{% endif %}
+
+{% if acao == 'editado' %}
+
+<dialog id="myDialog">
+    <h4>Oba!</h4>
+    <p>Seu treco foi editado com sucesso!</p>
+    <form method="dialog">
+        <button onclick="window.history.pushState({}, '', '/')">OK</button>
     </form>
 </dialog>
 <script>myDialog.showModal()</script>
