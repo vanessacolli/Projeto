@@ -57,6 +57,27 @@
     <li>Esqueceu a senha? <a href="/novasenha">Clique aqui!</a></li>
 </ul>
 
+{% if jatem != '' %}
+
+<dialog id="myDialog">
+    <h4>Oooops!</h4>
+    <p>{{ jatem }}</p>
+    <form method="dialog"><button>OK</button></form>
+</dialog>
+<script>myDialog.showModal()</script>
+
+{% endif %}
+
+{% if success %}
+
+<dialog id="myDialog">
+    <h4>Oba!</h4>
+    <p>Usuário cadastrado com sucesso! Faça login...</p>
+    <form method="dialog"><button onclick="location.href='/login'">OK</button></form>
+</dialog>
+<script>myDialog.showModal()</script>
+
+{% endif %}
 
 <script>
     toggleSenha.addEventListener('click', (e) => {
