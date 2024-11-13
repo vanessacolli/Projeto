@@ -12,7 +12,15 @@
 <ul class="userdata">
     <li>Em: {{ usuario.databr }}</li>
     <li>Nascimento: {{ usuario.nascimentobr }} ({{ usuario.idade }} anos)</li>
+
+    {% if usuario.total == 0 %}
+    <li>Ainda não tem trecos cadastrados</li>
+    {% elif usuario.total == 1 %}
+    <li>{{ usuario.total }} treco cadastrado</li>
+    {% else %}
     <li>{{ usuario.total }} trecos cadastrados</li>
+    {% endif %}
+
 </ul>
 
 <p>Clique no botão abaixo para editar seu perfil ou alterar a senha:</p>
