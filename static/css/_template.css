@@ -8,22 +8,22 @@
     --font-size: 16px;
 
     /* Cor de fundo do site */
-    --background-color: rgb(23, 64, 92);
+    --background-color: rgb(217, 94, 245);
 
     /* Cor 1 do tema */
-    --primary-color: steelblue;
+    --primary-color: rgb(134, 31, 198);
 
     /* Cor 2 do tema */
-    --secondary-color: orange;
+    --secondary-color: rgb(98, 0, 255);
 
     /* Cor 3 do tema */
-    --tertiary-color: orangered;
+    --tertiary-color: rgb(79, 243, 79);
 
     /* Cor de fundo das caixas*/
-    --box-background-color: white;
+    --box-background-color: rgb(233, 191, 247);
 
     /* Definição do logotipo */
-    --logo-border: .8px black;
+    --logo-border: .8px rgb(236, 248, 66);
 }
 
 * {
@@ -102,6 +102,12 @@ button {
     color: var(--secondary-color);
     -webkit-text-stroke: var(--logo-border);
     text-shadow: 2px 2px 5px grey;
+}
+
+#wrap>header img{
+    width: 4rem;
+    height: 4rem;
+    margin-right: .5rem;
 }
 
 #wrap>header h1 {
@@ -204,7 +210,7 @@ button {
 /***************/
 
 .field-help {
-    color: orange;
+    color: rgb(237, 49, 247);
     font-size: small;
     cursor: pointer;
 }
@@ -230,7 +236,7 @@ button {
 #wrap>main form input,
 #wrap>main form textarea {
     width: 100%;
-    border: 1px solid red;
+    border: 1px solid rgb(189, 41, 243);
 }
 
 #wrap>main form textarea {
@@ -239,7 +245,7 @@ button {
 
 #wrap>main form button[type=submit] {
     border: none;
-    background-color: grey;
+    background-color: rgb(66, 233, 66);
     color: white;
     cursor: pointer;
     pointer-events: none;
@@ -251,7 +257,7 @@ button {
 }
 
 #wrap>main form:valid button[type=submit] {
-    background-color: steelblue;
+    background-color: rgb(246, 145, 73);
     pointer-events: all;
 }
 
@@ -350,7 +356,7 @@ button {
 }
 
 .btnProfile {
-    background-color: steelblue;
+    background-color: rgb(119, 58, 250);
 }
 
 .btnLogout {
@@ -358,7 +364,7 @@ button {
 }
 
 .btnSignout {
-    background-color: orangered;
+    background-color: rgb(246, 80, 80);
 }
 
 .center {
